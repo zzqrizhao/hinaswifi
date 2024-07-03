@@ -11,7 +11,8 @@
     sed -i '8,13d' /usr/bin/wifi
    echo -e "${BLUE}脚本已安装完成，可以输入wifi进入脚本${NC}"
    echo -e "${BLACK}----------------------------------------------------${NC}"
-    
+  
+    while true; do
     echo -e "${GREEN}1. 安装wifi驱动${NC}"
     echo -e "${GREEN}2. 卸载wifi驱动${NC}"
     echo -e "${GREEN}3. 连接wifi${NC}"
@@ -30,10 +31,10 @@ case $choice in
     wget -nc -P /root/hinaswifi/ https://mirror.ghproxy.com/https://github.com/benbenhuo/hinaswifi/raw/main/rtl8188etv-0808.tar.gz
     chmod 777 /root/hinaswifi/wifi_install.sh
 
-    apt install kmod
+    apt install kmod -y
 if [ $? -ne 0 ];then
     sed -i "s|repo.huaweicloud.com|mirrors.tuna.tsinghua.edu.cn|g" /etc/apt/sources.list
-    apt update && apt install kmod
+    apt update && apt install kmod -y
 fi
     
     cd /root/hinaswifi 
@@ -69,24 +70,23 @@ fi
     chmod 644 /etc/network/interfaces.d/eth0
 
     echo "sleep 2s" >> /etc/profile.d/wifi.sh
-    echo "nmtui-connect" >> /etc/profile.d/wifi.sh
     echo "rm -r /root/hinaswifi" >> /etc/profile.d/wifi.sh
     echo "rm /etc/profile.d/wifi.sh" >> /etc/profile.d/wifi.sh
+    echo "nmtui-connect" >> /etc/profile.d/wifi.sh
+    echo "wifi" >> /etc/profile.d/wifi.sh
     chmod 777 /etc/profile.d/wifi.sh
     reboot
     ;;
 2)
     modprobe -r rtl8188fu 2>/dev/null
     modprobe -r rtl8188eu 2>/dev/null
-    rm -r /usr/lib/modules/4.4.35_ecoo_81092768
+    rm -r /usr/lib/modules/4.4.35_ecoo_*
     rm /etc/modules-load.d/wifi.conf
     depmod -a
     echo -e "${GREEN}删除wifi驱动完成${NC}"
-    wifi
     ;;
 3)
     nmtui-connect
-    wifi
     ;;
 4)
     rm /usr/bin/wifi
@@ -98,7 +98,8 @@ fi
     ;;
 *)
     echo -e "${RED}无效的选择${NC}"
-    wifi
+    ;;
 
 esac
+done
  
